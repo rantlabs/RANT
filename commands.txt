@@ -1,0 +1,34 @@
+show cdp neighbor
+show cdp neighbor detail
+show environment
+show environment all
+show interface counters errors
+show interface status
+show interfaces counters errors
+show ip bgp
+show ip bgp summary
+show ip int brief
+show ip ospf neighbors
+show ip route connected
+show ip route local
+show ip route local detail
+show lldp neighbor
+show module
+show port-channel summary
+show power
+show running-config
+show interface trunk
+show interfaces capabilities
+show spanning-tree
+show spanning-tree summary
+show spanning-tree detail
+show vtp status
+show version
+show vlan
+show vxlan address-table
+show inventory
+show process memory
+show process cpu
+show process cpu history
+show fex
+show license summary
