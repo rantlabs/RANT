@@ -42,4 +42,8 @@ I removed any line from containing detail because I wanted to remove the output 
 
 *grep "show cdp neighbor detail" outputfile.txt | grep -i platform | grep -i air*
 
+### Here is a fun one! SNMP public
+
+*grep public outputfile.txt
+
 #### Its very easy after you do a couple of searches to realize the potential of having all of your permanent and semi permanent network information in one easily searchable file.
