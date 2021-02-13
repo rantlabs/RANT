@@ -1,5 +1,5 @@
 # Some sample queries
-Once you have an output file, open it up in your favorite editor or display it using unix more to take a look at your output. You will quickly get
+Once you have an output file, open it up in your favorite editor or display it using your favorite editor take a look at your output. You will quickly get
 an idea of what you may want to search.
 
 ### Display the number of connected interfaces on all of your devices
