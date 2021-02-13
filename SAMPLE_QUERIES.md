@@ -34,7 +34,7 @@ your local usernames.
 
 ###  Count how many phones are connected to your network
 
-*grep "show cdp" outputfile.txt | grep SEP | grep -v detail*
+*grep "show cdp" outputfile.txt | grep SEP | grep -v detail | wc -l*
 
 I removed any line from containing detail because I wanted to remove the output of the the show cdp neighbor detail command.
 
