@@ -12,7 +12,7 @@ Gather logs in via SSH and issues the commands placed in the command file. Addit
 
 
 # Suggested Command File:
-**SEE: commands.txt**
+**SEE: [commands.txt](https://github.com/rantlabs/RANT/blob/main/commands.txt)**
 * show version
 * show running-config
 * show running-config section bgp
