@@ -31,7 +31,7 @@ Gather tags every line of the output with the name of device and the name of the
 manipulation tools such as: AWK, SED, GREP (-v, -i), uniq, uniq -c, wc -l (count number of lines), allow you to easily search your entire infrastructure
 at once for permanent and semi permanent data. 
 
-**SEE: SAMPLE_QUERIES.md file for examples**
+**SEE: [SAMPLE_QUERIES.md](https://github.com/rantlabs/RANT/blob/main/SAMPLE_QUERIES.md) file for examples**
 
 # You can do things like:
 * Most of these can be done in one simple query
