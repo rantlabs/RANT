@@ -1,4 +1,4 @@
-# RANT - Really Awesome New Tool(s)
+# RANT - Really Awesome New Tools
 SHOW COMMANDS ONLY
 
 GATHER
