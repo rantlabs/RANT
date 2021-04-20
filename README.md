@@ -10,7 +10,7 @@ GATHER
 
 Gather logs in via SSH and issues the commands placed in the command file. Additionally, Gather tags the output flowing to output file with the target name as well as the command issued. I suggest placing every device in your data center in the target file.
 
-# [HOWTO and DEMONSTRATION VIDEOS](https://github.com/rantlabs/RANT/blob/main/DEMO_VIDEOS.md)
+### [HOWTO and DEMONSTRATION VIDEOS](https://github.com/rantlabs/RANT/blob/main/DEMO_VIDEOS.md)
 
 # Suggested Command File:
 **SEE: [commands.txt](https://github.com/rantlabs/RANT/blob/main/commands.txt)**
