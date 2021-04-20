@@ -1,0 +1,1 @@
+This folder contains only images used in the DEMO_VIDEOS.md file
