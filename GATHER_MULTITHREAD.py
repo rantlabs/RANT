@@ -1,7 +1,5 @@
-#! /usr/bin/python3
+#! /Library/Frameworks/Python.framework/Versions/3.9/bin/python3
 
-# Created using Python3.9.2
-# Added unavailable error message inside a thread run
 # Uses multiprocessing.dummy threading module
 # Multi11-6 is the same as multi11 except
 # Different from multi10 Change to arista_eos if cisco_ios fails around line 43
@@ -9,7 +7,8 @@
 
 
 from tqdm import tqdm
-from concurrent.futures import ThreadPoolExecutor, as_completed
+# from concurrent.futures import ThreadPoolExecutor, as_completed
+# Removing concurrent futures from import using multiprocessing.dummy
 from multiprocessing.dummy import Pool as ThreadPool
 import getpass
 from netmiko import ConnectHandler
