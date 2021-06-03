@@ -1,5 +1,7 @@
-#! /opt/python37/bin/python3
+#! /usr/bin/python3
 
+# Created using Python3.9.2
+# Added unavailable error message inside a thread run
 # Uses multiprocessing.dummy threading module
 # Multi11-6 is the same as multi11 except
 # Different from multi10 Change to arista_eos if cisco_ios fails around line 43
@@ -35,23 +37,28 @@ hostlist = openfile(targetfile)
 
 outfile = input('output filename? ')
 
-pool = ThreadPool(15)
+pool = ThreadPool(40)
 
 def rantgather(host):
         print(f'#### COLLECTING DATA FOR {host} ###')
         single_host_total = []
         try:
-                device = ConnectHandler(device_type=platform, ip=host, username=username, password=passwd)
+                device = ConnectHandler(device_type=platform, ip=host, username=username, password=passwd, timeout=30)
         except Exception:
                 try:
-                        device = ConnectHandler(device_type='arista_eos', ip=host, username=username, password=passwd)
+                        device = ConnectHandler(device_type='arista_eos', ip=host, username=username, password=passwd, timeout=30)
                 except Exception:
-                        print(host + " is unavailable")
+                        with open(outfile, 'a') as file:
+                                file.write(host + " is unavailable\n")
+#                       print(host + " is unavailable")
+                        return None
 
         try:
                 device.find_prompt()
         except Exception:
-                print(host + " is unavailable")
+                with open(outfile, 'a') as file:
+                        file.write(host + " is unavailable\n")
+#               print(host + " is unavailable")
 
         for item in tqdm(show_commands):
                 try:
