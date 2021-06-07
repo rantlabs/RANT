@@ -1,4 +1,4 @@
-#! /Library/Frameworks/Python.framework/Versions/3.9/bin/python3
+#! /usr/bin/python3
 
 # Uses multiprocessing.dummy threading module
 # Multi11-6 is the same as multi11 except
