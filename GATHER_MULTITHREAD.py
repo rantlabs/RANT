@@ -4,21 +4,17 @@
 # Multi11-6 is the same as multi11 except
 # Different from multi10 Change to arista_eos if cisco_ios fails around line 43
 # From multi11 remove modules multiprocessing, os, sys, time
+# Removed concurrent.futures import
+# Added explicit main function
 
 
 from tqdm import tqdm
 # from concurrent.futures import ThreadPoolExecutor, as_completed
-# Removing concurrent futures from import using multiprocessing.dummy
 from multiprocessing.dummy import Pool as ThreadPool
 import getpass
 from netmiko import ConnectHandler
 from netmiko.ssh_exception import NetMikoTimeoutException
 from paramiko.ssh_exception import SSHException
-
-
-platform = 'cisco_ios'
-username = input('Username? ')
-passwd = getpass.getpass()
 
 def openfile(file):
         f = open(file,'r')
@@ -26,17 +22,6 @@ def openfile(file):
         x = x.strip()
         x = x.split('\n')
         return x
-
-commandfile = input('command file? ')
-targetfile = input('target file? ')
-
-show_commands = openfile(commandfile)
-hostlist = openfile(targetfile)
-
-
-outfile = input('output filename? ')
-
-pool = ThreadPool(40)
 
 def rantgather(host):
         print(f'#### COLLECTING DATA FOR {host} ###')
@@ -49,7 +34,6 @@ def rantgather(host):
                 except Exception:
                         with open(outfile, 'a') as file:
                                 file.write(host + " is unavailable\n")
-#                       print(host + " is unavailable")
                         return None
 
         try:
@@ -57,7 +41,6 @@ def rantgather(host):
         except Exception:
                 with open(outfile, 'a') as file:
                         file.write(host + " is unavailable\n")
-#               print(host + " is unavailable")
 
         for item in tqdm(show_commands):
                 try:
@@ -75,7 +58,16 @@ def rantgather(host):
                                 file.write(line)
         return single_host_total
 
-
-pool.map(rantgather,hostlist)
-pool.close()
-pool.join()
+if __name__ == "__main__":
+        platform = 'cisco_ios'
+        username = input('Username? ')
+        passwd = getpass.getpass()
+        commandfile = input('command file? ')
+        targetfile = input('target file? ')
+        outfile = input('output filename? ')
+        show_commands = openfile(commandfile)
+        hostlist = openfile(targetfile)
+        pool = ThreadPool(15)
+        pool.map(rantgather,hostlist)
+        pool.close()
+        pool.join()
