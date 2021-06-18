@@ -1,23 +1,54 @@
-#! /opt/python37/bin/python3
+#! /Library/Frameworks/Python.framework/Versions/3.9/bin/python3
 
-# Uses multiprocessing module for threading and the unordered imap function
+# Uses multiprocessing module for threading and the ordered map function
 # Multi11 is the same as multi10 except I try to change to arista_eos if cisco_ios fails around line 43
 # Trying some radically different threading techniques. This could be very differnet.
+# Adding unavaialable device message into main output
+# Added netmiko global_delay_factor of 0.4 it is increments of 100
+# import threading
+# Change from TQDM to atpbar
+# Adding argparse
+# Removed for loop in Multithread call
+
 
 from multiprocessing.pool import ThreadPool as Pool
-import threading
-
-from tqdm import tqdm
 from time import time
 import os, sys, getpass
 from netmiko import ConnectHandler
 from netmiko.ssh_exception import NetMikoTimeoutException
 from paramiko.ssh_exception import SSHException
+from atpbar import atpbar
+import argparse
 
+# ARGPARSE CODE
+parser = argparse.ArgumentParser()
+parser.add_argument('-c', action='store', dest='commandfile',
+                    help='Enter Command File - One Per Line', default=False)
+parser.add_argument('-o', action='store', dest='outfile',
+                    help='Enter Output Log File Name',default=False)
+parser.add_argument('-u', action='store', dest='username',
+                    help='Username',default=False)
+parser.add_argument('-t', action='store', dest='targetfile',
+                    help='Host File - One Per Line',default=False)
+parser.add_argument('-p', action='store', dest='passwd',
+                    help='Enter Password',default=False)
+
+
+results = parser.parse_args()
+username = results.username
+commandfile = results.commandfile
+targetfile = results.targetfile
+outfile = results.outfile
+passwd = results.passwd
+# END ARGPARSE CODE
 
 platform = 'cisco_ios'
-username = input('Username? ')
-passwd = getpass.getpass()
+
+if not username:
+        username = input('Username? ')
+
+if not passwd:
+        passwd = getpass.getpass()
 
 def openfile(file):
         f = open(file,'r')
@@ -26,34 +57,38 @@ def openfile(file):
         x = x.split('\n')
         return x
 
-commandfile = input('command file? ')
-targetfile = input('target file? ')
+if not commandfile:
+        commandfile = input('command file? ')
+
+if not targetfile:
+        targetfile = input('target file? ')
 
 show_commands = openfile(commandfile)
 hostlist = openfile(targetfile)
 
-
-outfile = input('output filename? ')
+if not outfile:
+        outfile = input('output filename? ')
 
 
 def rantgather(host):
-        print(f'#### COLLECTING DATA FOR {host} ###')
-#        file = open(outfile,"a")
         single_host_total = []
         try:
-                device = ConnectHandler(device_type=platform, ip=host, username=username, password=passwd)
+                device = ConnectHandler(device_type=platform, ip=host, username=username, password=passwd, timeout=30, global_delay_factor=0.4)
         except Exception:
                 try:
-                        device = ConnectHandler(device_type='arista_eos', ip=host, username=username, password=passwd)
+                        device = ConnectHandler(device_type='arista_eos', ip=host, username=username, password=passwd, timeout=30, global_delay_factor=0.4)
                 except Exception:
-                        print(host + " is unavailable")
+                        with open(outfile, 'a') as file:
+                                file.write(host + " is unavailable\n")
+                        return None
 
         try:
                 device.find_prompt()
         except Exception:
-                print(host + " is unavailable")
+                with open(outfile, 'a') as file:
+                        file.write(host + " is unavailable\n")
 
-        for item in tqdm(show_commands):
+        for item in atpbar((show_commands), name=host):
                 try:
                         output = device.send_command(item)
                 except:
@@ -71,9 +106,9 @@ def rantgather(host):
 
 
 if __name__ == '__main__':
-	pool = Pool(15)
-	start = time()
-	for i in pool.imap_unordered(rantgather, hostlist):
-		print(f'{i} is complete')
-	end = time()
-	print('Elapsed time:', end - start)
+        pool = Pool(30)
+        start = time()
+        pool.map(rantgather, hostlist)
+        end = time()
+        print("GatherDB Creation Complete")
+        print('Elapsed time:', end - start)
