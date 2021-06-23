@@ -1,4 +1,4 @@
-#! /Library/Frameworks/Python.framework/Versions/3.9/bin/python3
+#! /usr/bin/python3
 
 # Uses multiprocessing module for threading and the ordered map function
 # Multi11 is the same as multi10 except I try to change to arista_eos if cisco_ios fails around line 43
