@@ -20,35 +20,7 @@ from paramiko.ssh_exception import SSHException
 from atpbar import atpbar
 import argparse
 
-# ARGPARSE CODE
-parser = argparse.ArgumentParser()
-parser.add_argument('-c', action='store', dest='commandfile',
-                    help='Enter Command File - One Per Line', default=False)
-parser.add_argument('-o', action='store', dest='outfile',
-                    help='Enter Output Log File Name',default=False)
-parser.add_argument('-u', action='store', dest='username',
-                    help='Username',default=False)
-parser.add_argument('-t', action='store', dest='targetfile',
-                    help='Host File - One Per Line',default=False)
-parser.add_argument('-p', action='store', dest='passwd',
-                    help='Enter Password',default=False)
-
-
-results = parser.parse_args()
-username = results.username
-commandfile = results.commandfile
-targetfile = results.targetfile
-outfile = results.outfile
-passwd = results.passwd
-# END ARGPARSE CODE
-
 platform = 'cisco_ios'
-
-if not username:
-        username = input('Username? ')
-
-if not passwd:
-        passwd = getpass.getpass()
 
 def openfile(file):
         f = open(file,'r')
@@ -57,20 +29,8 @@ def openfile(file):
         x = x.split('\n')
         return x
 
-if not commandfile:
-        commandfile = input('command file? ')
-
-if not targetfile:
-        targetfile = input('target file? ')
-
-show_commands = openfile(commandfile)
-hostlist = openfile(targetfile)
-
-if not outfile:
-        outfile = input('output filename? ')
-
-
 def rantgather(host):
+        # If rantgather is imported, platform, username, and passwd will need to be set as global variables
         single_host_total = []
         try:
                 device = ConnectHandler(device_type=platform, ip=host, username=username, password=passwd, timeout=30, global_delay_factor=0.4)
@@ -105,7 +65,41 @@ def rantgather(host):
         return host
 
 
+
 if __name__ == '__main__':
+        # ARGPARSE CODE
+        parser = argparse.ArgumentParser()
+        parser.add_argument('-c', action='store', dest='commandfile',help='Enter Command File - One Per Line', default=False)
+        parser.add_argument('-o', action='store', dest='outfile',help='Enter Output Log File Name',default=False)
+        parser.add_argument('-u', action='store', dest='username',help='Username',default=False)
+        parser.add_argument('-t', action='store', dest='targetfile',help='Host File - One Per Line',default=False)
+        parser.add_argument('-p', action='store', dest='passwd',help='Enter Password',default=False)
+        results = parser.parse_args()
+        username = results.username
+        commandfile = results.commandfile
+        targetfile = results.targetfile
+        outfile = results.outfile
+        passwd = results.passwd
+        # END ARGPARSE CODE
+
+        if not username:
+                username = input('Username? ')
+
+        if not passwd:
+                passwd = getpass.getpass()
+        
+        if not commandfile:
+                commandfile = input('command file? ')
+
+        if not targetfile:
+                targetfile = input('target file? ')
+
+        if not outfile:
+                outfile = input('output filename? ')
+
+        show_commands = openfile(commandfile)
+        hostlist = openfile(targetfile)
+
         pool = Pool(30)
         start = time()
         pool.map(rantgather, hostlist)
