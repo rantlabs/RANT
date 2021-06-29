@@ -7,7 +7,6 @@ management data as well as configuration state data.
 One of the prime features of Gather is its speed. Gather allows you to get a deep understanding of the configuration and state of an infrastructure in 
 a few minutes. In addition, Gather allows you to run ad hoc commands such as "show running-config" on a large campus environment in a few seconds.
 
-Another 
 
 GATHER
 * Three files are required. A target file, a command file, and an output file (does not need to exist before running script).
