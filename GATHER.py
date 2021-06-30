@@ -13,10 +13,11 @@
 
 from multiprocessing.pool import ThreadPool as Pool
 from time import time
-import os, sys, getpass
+# import os, sys, getpass
+import getpass
 from netmiko import ConnectHandler
-from netmiko.ssh_exception import NetMikoTimeoutException
-from paramiko.ssh_exception import SSHException
+# from netmiko.ssh_exception import NetMikoTimeoutException
+# from paramiko.ssh_exception import SSHException
 from atpbar import atpbar
 import argparse
 
