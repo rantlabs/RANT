@@ -66,8 +66,16 @@ def rantgather(host):
         return host
 
 
+def main():
+        global platform
+        global username
+        global passwd
+        global commandfile
+        global targetfile
+        global outfile
+        global show_commands
 
-if __name__ == '__main__':
+        platform = 'cisco_ios'
         # ARGPARSE CODE
         parser = argparse.ArgumentParser()
         parser.add_argument('-c', action='store', dest='commandfile',help='Enter Command File - One Per Line', default=False)
@@ -107,3 +115,6 @@ if __name__ == '__main__':
         end = time()
         print("GatherDB Creation Complete")
         print('Elapsed time:', end - start)
+
+if __name__ == '__main__':
+	main()
