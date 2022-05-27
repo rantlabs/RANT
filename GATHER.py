@@ -83,12 +83,14 @@ def main():
         parser.add_argument('-u', action='store', dest='username',help='Username',default=False)
         parser.add_argument('-t', action='store', dest='targetfile',help='Host File - One Per Line',default=False)
         parser.add_argument('-p', action='store', dest='passwd',help='Enter Password',default=False)
+        parser.add_argument('--os', action='store', dest='platform',help='Enter Netmiko Platform',default='False')
         results = parser.parse_args()
         username = results.username
         commandfile = results.commandfile
         targetfile = results.targetfile
         outfile = results.outfile
         passwd = results.passwd
+        platform = results.platform 
         # END ARGPARSE CODE
 
         if not username:
@@ -105,6 +107,9 @@ def main():
 
         if not outfile:
                 outfile = input('output filename? ')
+
+        if not results.platform:
+                platform = 'cisco_ios'          
 
         show_commands = openfile(commandfile)
         hostlist = openfile(targetfile)
