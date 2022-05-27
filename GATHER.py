@@ -22,6 +22,7 @@ from atpbar import atpbar
 import argparse
 
 platform = 'cisco_ios'
+delay_factor=0.4
 
 def openfile(file):
         f = open(file,'r')
@@ -34,10 +35,10 @@ def rantgather(host):
         # If rantgather is imported, platform, username, and passwd will need to be set as global variables
         single_host_total = []
         try:
-                device = ConnectHandler(device_type=platform, ip=host, username=username, password=passwd, timeout=30, global_delay_factor=0.4)
+                device = ConnectHandler(device_type=platform, ip=host, username=username, password=passwd, timeout=30, global_delay_factor=delay_factor)
         except Exception:
                 try:
-                        device = ConnectHandler(device_type='arista_eos', ip=host, username=username, password=passwd, timeout=30, global_delay_factor=0.4)
+                        device = ConnectHandler(device_type='arista_eos', ip=host, username=username, password=passwd, timeout=30, global_delay_factor=delay_factor)
                 except Exception:
                         with open(outfile, 'a') as file:
                                 file.write(host + " is unavailable\n")
@@ -74,8 +75,10 @@ def main():
         global targetfile
         global outfile
         global show_commands
+        global delay_factor
 
         platform = 'cisco_ios'
+        delay_factor=0.4
         # ARGPARSE CODE
         parser = argparse.ArgumentParser()
         parser.add_argument('-c', action='store', dest='commandfile',help='Enter Command File - One Per Line', default=False)
@@ -83,7 +86,8 @@ def main():
         parser.add_argument('-u', action='store', dest='username',help='Username',default=False)
         parser.add_argument('-t', action='store', dest='targetfile',help='Host File - One Per Line',default=False)
         parser.add_argument('-p', action='store', dest='passwd',help='Enter Password',default=False)
-        parser.add_argument('--os', action='store', dest='platform',help='Enter Netmiko Platform',default='False')
+        parser.add_argument('--os', action='store', dest='platform',help='Enter Netmiko Platform',default=False)
+        parser.add_argument('-d', action='store', dest='delay',help='Enter Netmiko Global Delay - Float',type=float,default=False)
         results = parser.parse_args()
         username = results.username
         commandfile = results.commandfile
@@ -91,6 +95,7 @@ def main():
         outfile = results.outfile
         passwd = results.passwd
         platform = results.platform 
+        delay_factor = results.delay
         # END ARGPARSE CODE
 
         if not username:
@@ -109,7 +114,10 @@ def main():
                 outfile = input('output filename? ')
 
         if not results.platform:
-                platform = 'cisco_ios'          
+                platform = 'cisco_ios'        
+
+        if not results.delay:
+                delay_factor=0.4                     
 
         show_commands = openfile(commandfile)
         hostlist = openfile(targetfile)
