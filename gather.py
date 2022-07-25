@@ -5,6 +5,59 @@ import getpass
 from netmiko import ConnectHandler
 from atpbar import atpbar
 import argparse
+import re
+import os
+import platform as pltfm
+
+def simpleopen(file):
+        f = open(file,'r')
+        x = f.read()
+        return x
+
+def pinglist(DBfile):
+        pattern = '(?=.*[1-9]\.)(?=.*int)(?=.*ip)(?=.*brief)'
+        newlist = [col.split() for col in DBfile.splitlines() if re.search(pattern,col)]
+        return newlist
+
+responselist = []
+def func_pingcheck(hostinfo):
+        pattern_ip = '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+        if pltfm.system() == 'Windows':
+                try:
+                        response = os.system("ping /n 1 /w 1000 " + re.search(pattern_ip,hostinfo[6]).group())
+                except Exception:
+                        responselist.append(f'PING ERROR {hostinfo}\n')
+
+        else:
+                try:
+                        response = os.system("ping -c 1 -t 1 " + re.search(pattern_ip,hostinfo[6]).group())
+                except Exception:
+                        responselist.append(f'PING ERROR {hostinfo}\n')
+
+        
+        try:
+                if response == 0:
+                        try:
+                                print(f'{hostinfo[0]} {hostinfo[5]} {hostinfo[6]} is UP')
+                                responselist.append(f'{hostinfo[0]} {hostinfo[5]} {hostinfo[6]} is UP\n')
+                        except Exception:
+                                responselist.append(f'PING ERROR {hostinfo}\n')
+                else:
+                        try:
+                                print(f'{hostinfo[0]} {hostinfo[5]} {hostinfo[6]} is DOWN')
+                                responselist.append(f'{hostinfo[0]} {hostinfo[5]} {hostinfo[6]} is DOWN\n')
+                        except Exception:
+                                responselist.append(f'PING ERROR {hostinfo}\n')
+
+        except Exception:
+                responselist.append(f'PING ERROR {hostinfo}\n')
+
+        # with open(outfile, 'a') as file:
+        #         for item in responselist:
+        #                 for line in item:
+        #                         file.write(line)
+
+
 
 def openfile(file):
         f = open(file,'r')
@@ -12,6 +65,7 @@ def openfile(file):
         x = x.strip()
         x = x.split('\n')
         return x
+
 
 
 def rantgather(host):
@@ -73,7 +127,7 @@ def rantgather(host):
                                 for line in item:
                                         file.write(line)
 
-        return host
+        return True #Changed from host
 
 
 
@@ -103,6 +157,7 @@ def main():
         parser.add_argument('-mt', action='store', dest='maxthread', type=int, help='Number of simultateous threads - maximum value is 30',default=30)
         parser.add_argument('-en', action='store', dest='enable',help='Please enter the enable password only if you explicity wish to be in enable mode',default='gatherdefault')
         parser.add_argument('-notag', action='store_true', dest='notag',help='NO TAG places untagged output into seperate files',default=False)
+        parser.add_argument('-pc', action='store', dest='pingcheck',help='YOU MUST ENTER THE NAME OF A GatherDB containing the output of the "show ip interface brief" command. This option searches the GatherDB and compiles all Layer 3 Interfaces present in the "show ip interface brief" command. If you use the same filename specified in the -o option, a GatherDB will be generated with the specifiied filename and then the same file will be used for the ping check. You can also use this option alone to ping check an existing GatherDB.',default='pingchecknull')
         parser.add_argument('-os', action='store', dest='platform',help='Enter OS Type - Default value is cisco_ios - Other available platform values are. [SSH OPTIONS] a10, accedian, adtran_os, alcatel_aos, alcatel_sros, allied_telesis_awplus, apresia_aeos, arista_eos, aruba_os, aruba_osswitch, aruba_procurve, avaya_ers, avaya_vsp, broadcom_icos, brocade_fastiron, brocade_fos, brocade_netiron, brocade_nos, brocade_vdx, brocade_vyos, calix_b6, cdot_cros, centec_os, checkpoint_gaia, ciena_saos, cisco_asa, cisco_ftd, cisco_ios, cisco_nxos, cisco_s300, cisco_tp, cisco_viptela, cisco_wlc, cisco_xe, cisco_xr, cloudgenix_ion, coriant, dell_dnos9, dell_force10, dell_isilon, dell_os10, dell_os6, dell_os9, dell_powerconnect, dell_sonic, dlink_ds, eltex, eltex_esr, endace, enterasys, ericsson_ipos, extreme, extreme_ers, extreme_exos, extreme_netiron, extreme_nos, extreme_slx, extreme_tierra, extreme_vdx, extreme_vsp, extreme_wing, f5_linux, f5_ltm, f5_tmsh, flexvnf, fortinet, generic, generic_termserver, hp_comware, hp_procurve, huawei, huawei_olt, huawei_smartax, huawei_vrpv8, ipinfusion_ocnos, juniper, juniper_junos, juniper_screenos, keymile, keymile_nos, linux, mellanox, mellanox_mlnxos, mikrotik_routeros, mikrotik_switchos, mrv_lx, mrv_optiswitch, netapp_cdot, netgear_prosafe, netscaler, nokia_sros, oneaccess_oneos, ovs_linux, paloalto_panos, pluribus, quanta_mesh, rad_etx, raisecom_roap, ruckus_fastiron, ruijie_os, sixwind_os, sophos_sfos, supermicro_smis, tplink_jetstream, ubiquiti_edge, ubiquiti_edgerouter, ubiquiti_edgeswitch, ubiquiti_unifiswitch, vyatta_vyos, vyos, watchguard_fireware, yamaha, zte_zxros, zyxel_os, [TELNET OPTIONS] adtran_os_telnet, apresia_aeos_telnet, arista_eos_telnet, aruba_procurve_telnet, brocade_fastiron_telnet, brocade_netiron_telnet, calix_b6_telnet, centec_os_telnet, ciena_saos_telnet, cisco_ios_telnet, cisco_xr_telnet, cisco_s300_telnet, dell_dnos6_telnet, dell_powerconnect_telnet, dlink_ds_telnet, extreme_telnet, extreme_exos_telnet, extreme_netiron_telnet, generic_telnet, generic_termserver_telnet, hp_procurve_telnet, hp_comware_telnet, huawei_telnet, huawei_olt_telnet, ipinfusion_ocnos_telnet, juniper_junos_telnet, nokia_sros_telnet, oneaccess_oneos_telnet, paloalto_panos_telnet, rad_etx_telnet, raisecom_telnet, ruckus_fastiron_telnet, ruijie_os_telnet, supermicro_smis_telnet, tplink_jetstream_telnet, yamaha_telnet, zte_zxros_telnet',default='cisco_ios')
 
         
@@ -118,46 +173,113 @@ def main():
         maxthread = results.maxthread
         notag = results.notag
         platform = results.platform
+        pingcheck = results.pingcheck
+        
 
         # END ARGPARSE CODE
 
-        if not username:
+        if ((username or passwd or commandfile or singlecommand or targetfile or singletarget) and (pingcheck != 'pingchecknull')):
+                if (not username):
+                        username = input('Username? ')
+                if (not passwd): 
+                        passwd = getpass.getpass()
+                if ((not commandfile) and (not singlecommand)):
+                        commandfile = input('command file? ')
+                if ((not targetfile) and (not singletarget)):
+                        targetfile = input('target file? ')
+
+
+        if ((not username) and (pingcheck == 'pingchecknull')):
                 username = input('Username? ')
 
-        if not passwd:
+        if ((not passwd) and (pingcheck == 'pingchecknull')): 
                 passwd = getpass.getpass()
 
-        if ((not commandfile) and (not singlecommand)):
+        if ((not commandfile) and (not singlecommand) and (pingcheck == 'pingchecknull')):
                 commandfile = input('command file? ')
 
-        if ((not targetfile) and (not singletarget)):
+        if ((not targetfile) and (not singletarget) and (pingcheck == 'pingchecknull')):
                 targetfile = input('target file? ')
 
         if not outfile:
                 outfile = 'GatherDB_' + strftime("%Y%m%d-%H%M%S") + '.txt'
-                
+
+        # if pingcheck == 'pingchecknull':        
+        #         if singletarget:
+        #                 hostlist = singletarget.split(" ")
+        #         else:
+        #                 hostlist = openfile(targetfile)
+
         if singletarget:
                 hostlist = singletarget.split(" ")
-        else:
+        elif targetfile:
                 hostlist = openfile(targetfile)
+        else:
+                pass
+
+
+        # if pingcheck == 'pingchecknull':
+        #         if singlecommand:
+        #                 show_commands = singlecommand.split('\n')
+        #         else:
+        #                 show_commands = openfile(commandfile)
 
         if singlecommand:
                 show_commands = singlecommand.split('\n')
-        else:
+        elif commandfile:
                 show_commands = openfile(commandfile)
+        else:
+                pass
+
 
         if maxthread:
                 if maxthread > 30:
                         maxthread = 30
 
+        #if pingcheck:
+        #        if pingcheck == 'pingchecknull':
+        #                pingcheck = input('Enter Name of GatherDB containing "show ip interface brief" command: ')
+                
 
+        hostvar = True
         pool = Pool(maxthread)
-        start = time()
-        pool.map(rantgather, hostlist)
-        end = time()
-        print("GatherDB Creation Complete")
-        print('Elapsed time:', end - start)
-        print(f'Output File {outfile} if -notag flag enabled {outfile} file contains unavailable devices')
+        try:
+                hostlist and show_commands
+        except Exception:
+                hostvar = False
+        if hostvar:
+                start = time()
+                start = time()
+                pool.map(rantgather, hostlist)
+                end = time()
+                print("GatherDB Creation Complete")
+                print('Elapsed time:', end - start)
+                print(f'Output File {outfile} if -notag flag enabled {outfile} file contains unavailable devices')
+        # if pingcheck == 'pingchecknull':
+        #         start = time()
+        #         pool.map(rantgather, hostlist)
+        #         end = time()
+        #         print("GatherDB Creation Complete")
+        #         print('Elapsed time:', end - start)
+        #         print(f'Output File {outfile} if -notag flag enabled {outfile} file contains unavailable devices')
+        if pingcheck != "pingchecknull":
+                gatherdbOUT = simpleopen(pingcheck)
+                to_pinglist = pinglist(gatherdbOUT)
+                pool = Pool(20)
+                pool.map(func_pingcheck,to_pinglist)
+                # for item in to_pinglist:
+                #         func_pingcheck(item)
+                #         print("Gather PingDB Creation Complete")
+                #print('Elapsed time:', end - start)
+                with open(outfile, 'a') as file:
+                        for item in responselist:
+                                for line in item:
+                                        file.write(line)
+
+                print(f'Output File {outfile}')
+
+
+                
 
 if __name__ == '__main__':
         main()
