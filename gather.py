@@ -21,7 +21,7 @@ def pinglist(DBfile):
 
 responselist = []
 def func_pingcheck(hostinfo):
-        pattern_ip = '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+        pattern_ip = '((?:\d{1,3}\.){3}\d{1,3}/\d+)'
         if pltfm.system() == 'Windows':
                 try:
                         response = os.system("ping /n 1 /w 1000 " + re.search(pattern_ip,hostinfo[6]).group())
