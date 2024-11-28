@@ -16,13 +16,13 @@ def simpleopen(file):
         return x
 
 def pinglist(DBfile):
-        pattern = '(?=.*[1-9]\.)(?=.*int)(?=.*ip)(?=.*brief)'
+        pattern = '(?=.*[1-9]\\.)(?=.*int)(?=.*ip)(?=.*brief)'
         newlist = [col.split() for col in DBfile.splitlines() if re.search(pattern,col)]
         return newlist
 
 responselist = []
 def func_pingcheck(hostinfo):
-        pattern_ip = '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+        pattern_ip = '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
         if pltfm.system() == 'Windows':
                 try:
                         response = os.system("ping /n 1 /w 1000 " + re.search(pattern_ip,hostinfo[6]).group())
