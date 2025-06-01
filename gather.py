@@ -131,6 +131,8 @@ def rantgather(host):
                                         file.write(line)
 
         else:
+                if (overwrite):
+                        open(outfile, 'w').close()
                 with open(outfile, 'a') as file:
                         for item in single_host_total:
                                 for line in item:
@@ -153,6 +155,7 @@ def main():
         global notag
         global enablepasswd
         global date_time
+        global overwrite
 
         #platform = 'cisco_ios'
         # ARGPARSE CODE
@@ -170,7 +173,7 @@ def main():
         parser.add_argument('-pc', action='store', dest='pingcheck',help='YOU MUST ENTER THE NAME OF A GatherDB containing the output of the "show ip interface brief" command. This option searches the GatherDB and compiles all Layer 3 Interfaces present in the "show ip interface brief" command. If you use the same filename specified in the -o option, a GatherDB will be generated with the specifiied filename and then the same file will be used for the ping check. You can also use this option alone to ping check an existing GatherDB.',default='pingchecknull')
         parser.add_argument('-datetime', action='store_true', dest='date_time',help='Date Time adds the date and time to the output tags',default=False)
         parser.add_argument('-os', action='store', dest='platform',help='Enter OS Type - Default value is cisco_ios - Other available platform values are. [SSH OPTIONS] a10, accedian, adtran_os, alcatel_aos, alcatel_sros, allied_telesis_awplus, apresia_aeos, arista_eos, aruba_os, aruba_osswitch, aruba_procurve, avaya_ers, avaya_vsp, broadcom_icos, brocade_fastiron, brocade_fos, brocade_netiron, brocade_nos, brocade_vdx, brocade_vyos, calix_b6, cdot_cros, centec_os, checkpoint_gaia, ciena_saos, cisco_asa, cisco_ftd, cisco_ios, cisco_nxos, cisco_s300, cisco_tp, cisco_viptela, cisco_wlc, cisco_xe, cisco_xr, cloudgenix_ion, coriant, dell_dnos9, dell_force10, dell_isilon, dell_os10, dell_os6, dell_os9, dell_powerconnect, dell_sonic, dlink_ds, eltex, eltex_esr, endace, enterasys, ericsson_ipos, extreme, extreme_ers, extreme_exos, extreme_netiron, extreme_nos, extreme_slx, extreme_tierra, extreme_vdx, extreme_vsp, extreme_wing, f5_linux, f5_ltm, f5_tmsh, flexvnf, fortinet, generic, generic_termserver, hp_comware, hp_procurve, huawei, huawei_olt, huawei_smartax, huawei_vrpv8, ipinfusion_ocnos, juniper, juniper_junos, juniper_screenos, keymile, keymile_nos, linux, mellanox, mellanox_mlnxos, mikrotik_routeros, mikrotik_switchos, mrv_lx, mrv_optiswitch, netapp_cdot, netgear_prosafe, netscaler, nokia_sros, oneaccess_oneos, ovs_linux, paloalto_panos, pluribus, quanta_mesh, rad_etx, raisecom_roap, ruckus_fastiron, ruijie_os, sixwind_os, sophos_sfos, supermicro_smis, tplink_jetstream, ubiquiti_edge, ubiquiti_edgerouter, ubiquiti_edgeswitch, ubiquiti_unifiswitch, vyatta_vyos, vyos, watchguard_fireware, yamaha, zte_zxros, zyxel_os, [TELNET OPTIONS] adtran_os_telnet, apresia_aeos_telnet, arista_eos_telnet, aruba_procurve_telnet, brocade_fastiron_telnet, brocade_netiron_telnet, calix_b6_telnet, centec_os_telnet, ciena_saos_telnet, cisco_ios_telnet, cisco_xr_telnet, cisco_s300_telnet, dell_dnos6_telnet, dell_powerconnect_telnet, dlink_ds_telnet, extreme_telnet, extreme_exos_telnet, extreme_netiron_telnet, generic_telnet, generic_termserver_telnet, hp_procurve_telnet, hp_comware_telnet, huawei_telnet, huawei_olt_telnet, ipinfusion_ocnos_telnet, juniper_junos_telnet, nokia_sros_telnet, oneaccess_oneos_telnet, paloalto_panos_telnet, rad_etx_telnet, raisecom_telnet, ruckus_fastiron_telnet, ruijie_os_telnet, supermicro_smis_telnet, tplink_jetstream_telnet, yamaha_telnet, zte_zxros_telnet',default='cisco_ios')
-
+        parser.add_argument('-w', action='store_true', dest='overwrite',help='Overwrite exsiting non-tagged Database outfile. ',default=False)
         
         results = parser.parse_args()
         username = results.username
@@ -186,6 +189,7 @@ def main():
         platform = results.platform
         pingcheck = results.pingcheck
         date_time = results.date_time
+        overwrite = results.overwrite
         
 
         # END ARGPARSE CODE
